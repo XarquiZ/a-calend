@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -28,7 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { UserPlus, UserEdit, UserMinus, Move } from 'lucide-react';
+import { UserPlus, UserPen, UserMinus, Move } from 'lucide-react';
 
 // Interface para Turma (simplificada)
 interface Turma {
@@ -281,7 +280,7 @@ const GerenciarAlunos = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <Button variant="outline" size="sm" onClick={() => startEdit(aluno)}>
-                      <UserEdit className="h-4 w-4 mr-1" />
+                      <UserPen className="h-4 w-4 mr-1" />
                       Editar
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => startTransfer(aluno)}>
