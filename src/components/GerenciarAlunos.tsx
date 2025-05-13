@@ -39,7 +39,7 @@ const GerenciarAlunos = () => {
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
   
   // Filtro de turmas
-  const [turmaFilter, setTurmaFilter] = useState<string>('');
+  const [turmaFilter, setTurmaFilter] = useState<string>('all');
   
   // Função para criar um novo aluno
   const handleCreate = (novoAluno: Omit<Aluno, 'id'>) => {
@@ -90,9 +90,9 @@ const GerenciarAlunos = () => {
   };
   
   // Filtrar alunos por turma
-  const filteredAlunos = turmaFilter 
-    ? alunos.filter(a => a.turmaId === turmaFilter)
-    : alunos;
+  const filteredAlunos = turmaFilter === 'all'
+    ? alunos
+    : alunos.filter(a => a.turmaId === turmaFilter);
   
   // Iniciar edição de um aluno
   const startEdit = (aluno: Aluno) => {
@@ -117,7 +117,7 @@ const GerenciarAlunos = () => {
               <SelectValue placeholder="Filtrar por turma" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as turmas</SelectItem>
+              <SelectItem value="all">Todas as turmas</SelectItem>
               {turmas.map(turma => (
                 <SelectItem key={turma.id} value={turma.id}>{turma.nome}</SelectItem>
               ))}
