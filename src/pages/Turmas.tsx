@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import StudentList, { Student } from '@/components/StudentList';
 import AttendanceCalendar from '@/components/AttendanceCalendar';
 import AttendanceStats from '@/components/AttendanceStats';
 import StudentForm from '@/components/StudentForm';
+import StudentReportCard from '@/components/StudentReportCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, ListCheck, User, FileText } from "lucide-react";
 
