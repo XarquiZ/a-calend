@@ -9,8 +9,9 @@ import StudentList, { Student } from '@/components/StudentList';
 import AttendanceCalendar from '@/components/AttendanceCalendar';
 import AttendanceStats from '@/components/AttendanceStats';
 import StudentForm from '@/components/StudentForm';
+import StudentReportCard from '@/components/StudentReportCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, ListCheck, User } from "lucide-react";
+import { CalendarDays, ListCheck, User, FileText } from "lucide-react";
 
 // Mock data for initial students - reutilizando o código existente
 const mockStudents: Student[] = [
@@ -21,11 +22,66 @@ const mockStudents: Student[] = [
   { id: '5', name: 'Lucas Ferreira', registration: '2023005' },
 ];
 
+// Mock data for the report card
+const reportCardSections = [
+  {
+    title: "CURSO ESPECÍFICO",
+    backgroundColor: "#ffffff",
+    items: [
+      { id: 1, name: "MÉDIA DE ATIVIDADES TEÓRICAS", grade: 9.15 },
+      { id: 2, name: "MÉDIA DE ATIVIDADES PRÁTICAS", grade: 8.5 }
+    ],
+    average: 8.83
+  },
+  {
+    title: "CURSO EXTRA",
+    backgroundColor: "#e7f0fd",
+    items: [
+      { id: 1, name: "ESPORTE", grade: 10 },
+      { id: 2, name: "FORMAÇÃO HUMANA", grade: 10 },
+      { id: 3, name: "INICIAÇÃO DIGITAL", grade: 8 },
+      { id: 4, name: "MERCADO DE TRABALHO", grade: 9.5 },
+      { id: 5, name: "PRODUÇÃO DE CONTEÚDO E COMUNICAÇÃO PROFISSIONAL", grade: 10 },
+      { id: 6, name: "QUALIDADE DE VIDA", grade: 10 },
+      { id: 7, name: "AVALIAÇÃO CURSO EXTRA", grade: 10 }
+    ],
+    average: 10
+  },
+  {
+    title: "PARTICIPAÇÃO E RESPONSABILIDADE",
+    backgroundColor: "#F2FCE2",
+    items: [
+      { id: 1, name: "NOTIFICAÇÕES", grade: 9 },
+      { id: 2, name: "PARTICIPAÇÃO", grade: 9.5 }
+    ],
+    average: 8.6
+  },
+  {
+    title: "AVALIAÇÃO INSTITUCIONAL E ESTÁGIO CULTURAL",
+    backgroundColor: "#FEC6A1",
+    items: [
+      { id: 1, name: "AVALIAÇÃO INSTITUCIONAL", grade: 23 },
+      { id: 2, name: "ESTÁGIO CULTURAL", grade: 8.5 }
+    ],
+    average: 15.75
+  },
+  {
+    title: "TRABALHO DE CONCLUSÃO DE CURSO",
+    backgroundColor: "#ffffff",
+    items: [
+      { id: 1, name: "TCC - TRABALHO TEÓRICO", grade: 9.6 },
+      { id: 2, name: "TCC - APRESENTAÇÃO", grade: 9.2 }
+    ],
+    average: 9.4
+  }
+];
+
 const Turmas = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [attendanceRecords, setAttendanceRecords] = useState<Record<string, Record<string, boolean>>>({});
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   
   // Handle attendance change - reutilizando o código existente
   const handleAttendanceChange = (studentId: string, date: string, isPresent: boolean) => {
@@ -41,6 +97,11 @@ const Turmas = () => {
   // Handle adding a new student - reutilizando o código existente
   const handleAddStudent = (student: Student) => {
     setStudents(prev => [...prev, student]);
+  };
+
+  // Handle selecting a student for report card view
+  const handleSelectStudent = (student: Student) => {
+    setSelectedStudent(student);
   };
 
   return (
@@ -78,7 +139,7 @@ const Turmas = () => {
             />
             
             <Tabs defaultValue="attendance" className="mt-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="attendance">
                   <ListCheck className="h-4 w-4 mr-2" />
                   Presenças
@@ -90,6 +151,10 @@ const Turmas = () => {
                 <TabsTrigger value="add-student">
                   <CalendarDays className="h-4 w-4 mr-2" />
                   Adicionar Aluno
+                </TabsTrigger>
+                <TabsTrigger value="report-card">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Boletim
                 </TabsTrigger>
               </TabsList>
               
@@ -113,11 +178,19 @@ const Turmas = () => {
                   <CardContent>
                     <div className="space-y-4">
                       {students.map(student => (
-                        <div key={student.id} className="flex justify-between items-center p-3 bg-white border rounded-md">
+                        <div 
+                          key={student.id} 
+                          className="flex justify-between items-center p-3 bg-white border rounded-md hover:bg-gray-50 cursor-pointer"
+                          onClick={() => handleSelectStudent(student)}
+                        >
                           <div>
                             <h3 className="font-medium">{student.name}</h3>
                             <p className="text-sm text-muted-foreground">Matrícula: {student.registration}</p>
                           </div>
+                          <Button variant="ghost" size="sm" onClick={() => handleSelectStudent(student)}>
+                            <FileText className="h-4 w-4 mr-2" />
+                            Ver Boletim
+                          </Button>
                         </div>
                       ))}
                     </div>
@@ -135,6 +208,32 @@ const Turmas = () => {
                   </CardHeader>
                   <CardContent>
                     <StudentForm onAddStudent={handleAddStudent} />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="report-card" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Boletim Escolar</CardTitle>
+                    <CardDescription>
+                      {selectedStudent 
+                        ? `Visualizando boletim de ${selectedStudent.name}`
+                        : 'Selecione um aluno na aba "Alunos" para visualizar o boletim'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {selectedStudent ? (
+                      <StudentReportCard 
+                        studentName={selectedStudent.name}
+                        sections={reportCardSections}
+                      />
+                    ) : (
+                      <div className="text-center py-10">
+                        <FileText className="h-20 w-20 mx-auto text-gray-300 mb-4" />
+                        <p className="text-gray-500">Nenhum aluno selecionado</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
